@@ -1,0 +1,21 @@
+{
+  "name": "SQL Product Analytics Labs",
+  "foreground": "#1f2937",
+  "background": "#f9fafb",
+  "tableAccent": "#2563eb",
+  "visualStyles": {
+    "*": {
+      "color": ["#111827"],
+      "titleText": ["#111827"],
+      "labelColor": ["#1f2937"],
+      "colorPalette": [
+        "#2563eb",
+        "#7c3aed",
+        "#059669",
+        "#f59e0b",
+        "#ef4444",
+        "#14b8a6"
+      ]
+    }
+  }
+}

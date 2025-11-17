@@ -1,0 +1,12 @@
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+.env
+.venv/
+venv/
+.data/
+data/synthetic/*
+!data/synthetic/.gitkeep
+reports/latest/*
+!reports/latest/.gitkeep
+.DS_Store
