@@ -144,9 +144,15 @@ def generate_events(customers: pd.DataFrame, target_events: int = 80000) -> pd.D
 
 
 def generate_marketing_experiments(customers: pd.DataFrame, n_participants: int = 30000) -> pd.DataFrame:
-    chosen_customers = np.random.choice(customers["customer_id"].values, size=n_participants, replace=False)
-    groups = np.random.choice(["A", "B"], size=n_participants)
-    exposures = random_dates(START_DATE + pd.DateOffset(months=1), END_DATE, n_participants)
+    # Cap participant draw to the available customer pool to avoid oversampling errors
+    participant_count = min(n_participants, len(customers))
+    chosen_customers = np.random.choice(
+        customers["customer_id"].values, size=participant_count, replace=False
+    )
+    groups = np.random.choice(["A", "B"], size=participant_count)
+    exposures = random_dates(
+        START_DATE + pd.DateOffset(months=1), END_DATE, participant_count
+    )
 
     base_rate = 0.12
     lift = 0.04
@@ -163,7 +169,7 @@ def generate_marketing_experiments(customers: pd.DataFrame, n_participants: int 
             conversion_ts.append(pd.NaT)
 
     df = pd.DataFrame({
-        "exp_id": np.arange(1, n_participants + 1),
+        "exp_id": np.arange(1, participant_count + 1),
         "user_id": chosen_customers,
         "group": groups,
         "exposed_ts": exposures,
