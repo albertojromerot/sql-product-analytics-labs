@@ -9,4 +9,6 @@ data/synthetic/*
 !data/synthetic/.gitkeep
 reports/latest/*
 !reports/latest/.gitkeep
+notebooks/*.ipynb
+notebooks_build/
 .DS_Store

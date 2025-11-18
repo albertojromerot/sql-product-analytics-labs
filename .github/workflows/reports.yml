@@ -34,6 +34,17 @@ jobs:
           )
       - name: Generate sample data
         run: python src/generate_data.py
+      - name: Convert notebooks (py -> ipynb)
+        run: |
+          mkdir -p notebooks_build
+          for nb in notebooks_py/*.py; do
+            base=$(basename "$nb" .py)
+            jupytext --from py:percent --to ipynb "$nb" -o "notebooks_build/${base}.ipynb"
+          done
+      - name: Execute notebooks
+        run: |
+          mkdir -p reports/latest assets
+          for nb in notebooks_build/*.ipynb; do
       - name: Execute notebooks
         run: |
           mkdir -p reports/latest
@@ -71,6 +82,13 @@ jobs:
           )
       - name: Generate data and execute notebooks
         run: |
+          mkdir -p reports/samples assets notebooks_build
+          python src/generate_data.py
+          for nb in notebooks_py/*.py; do
+            base=$(basename "$nb" .py)
+            jupytext --from py:percent --to ipynb "$nb" -o "notebooks_build/${base}.ipynb"
+          done
+          for nb in notebooks_build/*.ipynb; do
           mkdir -p reports/samples assets
           python src/generate_data.py
           for nb in notebooks/*.ipynb; do
