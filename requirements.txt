@@ -2,9 +2,6 @@ duckdb==1.1.2
 pandas==2.2.2
 numpy==1.26.4
 matplotlib==3.8.4
-seaborn==0.13.2
-jupyter==1.0.0
-nbconvert==7.16.4
 jupytext==1.16.2
-faker==24.3.0
-statsmodels==0.14.2
+nbconvert==7.16.4
+papermill==2.5.0
