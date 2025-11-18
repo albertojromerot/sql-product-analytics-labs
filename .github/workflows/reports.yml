@@ -45,6 +45,10 @@ jobs:
         run: |
           mkdir -p reports/latest assets
           for nb in notebooks_build/*.ipynb; do
+      - name: Execute notebooks
+        run: |
+          mkdir -p reports/latest
+          for nb in notebooks/*.ipynb; do
             jupyter nbconvert --to html --execute "$nb" --output-dir reports/latest
           done
       - name: Upload reports
@@ -85,6 +89,9 @@ jobs:
             jupytext --from py:percent --to ipynb "$nb" -o "notebooks_build/${base}.ipynb"
           done
           for nb in notebooks_build/*.ipynb; do
+          mkdir -p reports/samples assets
+          python src/generate_data.py
+          for nb in notebooks/*.ipynb; do
             jupyter nbconvert --to html --execute "$nb" --output-dir reports/samples
           done
       - name: Commit published outputs
