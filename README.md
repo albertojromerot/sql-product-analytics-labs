@@ -1,5 +1,6 @@
 # SQL Product Analytics Labs
 
+![CI](https://github.com/albertojromerot/sql-product-analytics-labs/actions/workflows/reports.yml/badge.svg)
 [![Notebooks](https://github.com/albertojromerot/sql-product-analytics-labs/actions/workflows/reports.yml/badge.svg)](https://github.com/albertojromerot/sql-product-analytics-labs/actions/workflows/reports.yml)
 
 A recruiter-friendly, end-to-end SQL analytics showcase that starts with synthetic e-commerce data, walks through DuckDB notebooks, and ends with ready-to-share HTML reports and Power BI theming.
@@ -11,6 +12,22 @@ A recruiter-friendly, end-to-end SQL analytics showcase that starts with synthet
 - 📄 Notebook HTML previews will be published to `reports/samples/` and linked from the PR checks.
 - 🖼️ PNG charts for README snippets will be written to `assets/` by the executed notebooks.
 After merge to main, CI commits HTML to `reports/samples/` and PNG charts to `assets/` so you can browse them directly in the repo.
+
+## Reports
+- [Joins & revenue KPIs](reports/samples/01_joins.html) — Appears after first CI run on main.
+- [Window functions & cohorts](reports/samples/02_window_functions.html) — Appears after first CI run on main.
+- [CTEs & funnel analysis](reports/samples/03_ctes_and_funnels.html) — Appears after first CI run on main.
+- [A/B test marketing](reports/samples/04_ab_test_marketing.html) — Appears after first CI run on main.
+
+## Gallery
+> Thumbnails are committed by CI after the first merge to `main`.
+
+<p align="center">
+  <img src="assets/joins.png" alt="Joins overview" width="45%" title="Appears after first CI run on main" />
+  <img src="assets/windows.png" alt="Window functions" width="45%" title="Appears after first CI run on main" />
+  <img src="assets/funnels.png" alt="Funnel analysis" width="45%" title="Appears after first CI run on main" />
+  <img src="assets/abtest.png" alt="A/B test" width="45%" title="Appears after first CI run on main" />
+</p>
 
 ## Data model
 ```mermaid
