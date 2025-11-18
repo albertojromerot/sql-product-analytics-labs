@@ -19,3 +19,7 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python src/generate_data.py
 ```
+
+If your network blocks PyPI:
+- Set proxy env vars before installing: `HTTP_PROXY=http://user:pass@proxy:port` and `HTTPS_PROXY`.
+- Or download wheels elsewhere, copy them here, and run `pip install --no-index --find-links <wheel_dir> -r requirements.txt`.
