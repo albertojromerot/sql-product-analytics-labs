@@ -27,6 +27,7 @@ jobs:
           PIP_INDEX_URL: https://pypi.org/simple
           PIP_DEFAULT_TIMEOUT: "60"
         run: |
+          set -euo pipefail
           uv pip install --system --reinstall -r requirements.txt || (
             echo "uv failed, falling back to pip" && \
             python -m pip install --upgrade pip && \
@@ -36,6 +37,7 @@ jobs:
         run: python src/generate_data.py
       - name: Convert notebooks (py -> ipynb)
         run: |
+          set -euo pipefail
           mkdir -p notebooks_build
           for nb in notebooks_py/*.py; do
             base=$(basename "$nb" .py)
@@ -43,7 +45,9 @@ jobs:
           done
       - name: Execute notebooks
         run: |
+          set -euo pipefail
           mkdir -p reports/latest assets
+          export MISTUNE_USE_LEGACY=1
           for nb in notebooks_build/*.ipynb; do
             jupyter nbconvert --to html --execute "$nb" --output-dir reports/latest
           done
@@ -55,7 +59,7 @@ jobs:
 
   publish:
     needs: build
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -71,6 +75,7 @@ jobs:
           PIP_INDEX_URL: https://pypi.org/simple
           PIP_DEFAULT_TIMEOUT: "60"
         run: |
+          set -euo pipefail
           uv pip install --system --reinstall -r requirements.txt || (
             echo "uv failed, falling back to pip" && \
             python -m pip install --upgrade pip && \
@@ -78,12 +83,18 @@ jobs:
           )
       - name: Generate data and execute notebooks
         run: |
-          mkdir -p reports/samples assets notebooks_build
+          set -euo pipefail
           python src/generate_data.py
+          mkdir -p notebooks_build
           for nb in notebooks_py/*.py; do
             base=$(basename "$nb" .py)
             jupytext --from py:percent --to ipynb "$nb" -o "notebooks_build/${base}.ipynb"
           done
+      - name: Execute notebooks and publish reports
+        run: |
+          set -euo pipefail
+          mkdir -p reports/samples assets
+          export MISTUNE_USE_LEGACY=1
           for nb in notebooks_build/*.ipynb; do
             jupyter nbconvert --to html --execute "$nb" --output-dir reports/samples
           done
