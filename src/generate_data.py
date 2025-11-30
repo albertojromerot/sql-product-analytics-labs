@@ -54,13 +54,18 @@ def generate_products() -> pd.DataFrame:
         ("Productivity", 19, 149),
         ("Finance", 39, 249),
     ]
+    # Realistic product name prefixes and suffixes
+    prefixes = ["Pro", "Enterprise", "Cloud", "AI", "Smart", "Ultra", "Core", "Prime", "Elite", "Max"]
+    suffixes = ["Hub", "Suite", "Platform", "Engine", "Manager", "Studio", "System", "Tool", "Assistant", "Dashboard"]
     product_rows = []
     product_id = 1
     for cat, low, high in categories:
-        for _ in range(10):
+        for i in range(10):
             price = np.random.uniform(low, high)
+            product_name = f"{prefixes[i]} {cat} {suffixes[i]}"
             product_rows.append({
                 "product_id": product_id,
+                "product_name": product_name,
                 "category": cat,
                 "price_usd": round(price, 2),
             })
@@ -187,7 +192,7 @@ def compute_order_revenue(orders: pd.DataFrame, order_items: pd.DataFrame) -> pd
 
 
 def write_schema_and_seed(sample_dir: Path):
-    schema = f"""
+    schema = """
 CREATE TABLE customers (
     customer_id INTEGER PRIMARY KEY,
     signup_date DATE,
@@ -199,6 +204,7 @@ CREATE TABLE customers (
 
 CREATE TABLE products (
     product_id INTEGER PRIMARY KEY,
+    product_name VARCHAR,
     category VARCHAR,
     price_usd DECIMAL(10,2)
 );
@@ -207,8 +213,8 @@ CREATE TABLE orders (
     order_id INTEGER PRIMARY KEY,
     customer_id INTEGER,
     order_ts TIMESTAMP,
-    revenue_usd DECIMAL(10,2),
-    source VARCHAR
+    source VARCHAR,
+    revenue_usd DECIMAL(10,2)
 );
 
 CREATE TABLE order_items (
@@ -234,20 +240,61 @@ CREATE TABLE marketing_experiments (
     conversion_ts TIMESTAMP
 );
 """
+    # Use relative path from project root for portability
+    relative_sample_dir = sample_dir.relative_to(BASE_DIR)
     seed_lines = []
     for table in ["customers", "products", "orders", "order_items", "events", "marketing_experiments"]:
         seed_lines.append(
-            f"COPY {table} FROM '{sample_dir / (table + '.csv')}' WITH (HEADER, DELIMITER ',');"
+            f"COPY {table} FROM '{relative_sample_dir / (table + '.csv')}' WITH (HEADER, DELIMITER ',');"
         )
     (SQL_DIR / "schema.sql").write_text(schema.strip() + "\n")
     (SQL_DIR / "seed.sql").write_text("\n".join(seed_lines) + "\n")
 
 
-def save_samples(df: pd.DataFrame, name: str, sample_size: int = 500):
-    df.to_csv(SYNTHETIC_DIR / f"{name}.csv", index=False)
-    df.sample(n=min(sample_size, len(df)), random_state=42).to_csv(
-        SAMPLES_DIR / f"{name}.csv", index=False
-    )
+def save_samples_with_integrity(datasets: dict, sample_customers: int = 500):
+    """
+    Save samples maintaining referential integrity.
+    Sample customers first, then filter related tables to match.
+    """
+    # Save full synthetic data
+    for name, df in datasets.items():
+        df.to_csv(SYNTHETIC_DIR / f"{name}.csv", index=False)
+
+    # Sample customers first
+    customers = datasets["customers"]
+    sampled_customers = customers.sample(n=min(sample_customers, len(customers)), random_state=42)
+    customer_ids = set(sampled_customers["customer_id"].values)
+
+    # Filter orders to only include sampled customers
+    orders = datasets["orders"]
+    sampled_orders = orders[orders["customer_id"].isin(customer_ids)]
+    order_ids = set(sampled_orders["order_id"].values)
+
+    # Filter order_items to only include sampled orders
+    order_items = datasets["order_items"]
+    sampled_order_items = order_items[order_items["order_id"].isin(order_ids)]
+
+    # Get product_ids from sampled order_items
+    product_ids = set(sampled_order_items["product_id"].values)
+
+    # Products - keep all products (they're the dimension table)
+    products = datasets["products"]
+
+    # Filter events to only include sampled customers
+    events = datasets["events"]
+    sampled_events = events[events["customer_id"].isin(customer_ids)]
+
+    # Filter marketing_experiments to only include sampled customers (user_id column)
+    marketing = datasets["marketing_experiments"]
+    sampled_marketing = marketing[marketing["user_id"].isin(customer_ids)]
+
+    # Save sampled data
+    sampled_customers.to_csv(SAMPLES_DIR / "customers.csv", index=False)
+    products.to_csv(SAMPLES_DIR / "products.csv", index=False)
+    sampled_orders.to_csv(SAMPLES_DIR / "orders.csv", index=False)
+    sampled_order_items.to_csv(SAMPLES_DIR / "order_items.csv", index=False)
+    sampled_events.to_csv(SAMPLES_DIR / "events.csv", index=False)
+    sampled_marketing.to_csv(SAMPLES_DIR / "marketing_experiments.csv", index=False)
 
 
 def main():
@@ -268,8 +315,7 @@ def main():
         "marketing_experiments": marketing,
     }
 
-    for name, df in datasets.items():
-        save_samples(df, name)
+    save_samples_with_integrity(datasets)
 
     write_schema_and_seed(SAMPLES_DIR)
 

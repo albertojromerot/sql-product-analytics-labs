@@ -3,6 +3,7 @@
 # Use ranking and moving averages to understand cohorts and retention.
 
 # %%
+import os
 import duckdb, pandas as pd, seaborn as sns, matplotlib.pyplot as plt, numpy as np
 from pathlib import Path
 
@@ -23,6 +24,9 @@ def get_project_root() -> Path:
 PROJECT_ROOT = get_project_root()
 SCHEMA_PATH = PROJECT_ROOT / "sql" / "schema.sql"
 SEED_PATH   = PROJECT_ROOT / "sql" / "seed.sql"
+
+# Change to project root so relative paths in seed.sql work
+os.chdir(PROJECT_ROOT)
 
 con = duckdb.connect(database=':memory:')
 con.execute(SCHEMA_PATH.read_text())

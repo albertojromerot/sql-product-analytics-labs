@@ -9,6 +9,7 @@ CREATE TABLE customers (
 
 CREATE TABLE products (
     product_id INTEGER PRIMARY KEY,
+    product_name VARCHAR,
     category VARCHAR,
     price_usd DECIMAL(10,2)
 );
@@ -17,8 +18,8 @@ CREATE TABLE orders (
     order_id INTEGER PRIMARY KEY,
     customer_id INTEGER,
     order_ts TIMESTAMP,
-    revenue_usd DECIMAL(10,2),
-    source VARCHAR
+    source VARCHAR,
+    revenue_usd DECIMAL(10,2)
 );
 
 CREATE TABLE order_items (

@@ -3,6 +3,7 @@
 # Model the visit→signup→purchase journey with CTEs.
 
 # %%
+import os
 import duckdb, pandas as pd, seaborn as sns, matplotlib.pyplot as plt, numpy as np
 from pathlib import Path
 
@@ -23,6 +24,9 @@ def get_project_root() -> Path:
 PROJECT_ROOT = get_project_root()
 SCHEMA_PATH = PROJECT_ROOT / "sql" / "schema.sql"
 SEED_PATH   = PROJECT_ROOT / "sql" / "seed.sql"
+
+# Change to project root so relative paths in seed.sql work
+os.chdir(PROJECT_ROOT)
 
 con = duckdb.connect(database=':memory:')
 con.execute(SCHEMA_PATH.read_text())
@@ -103,7 +107,8 @@ monthly = con.execute('''
 ''').fetchdf()
 
 monthly['visit_to_signup'] = monthly['signups'] / monthly['visitors']
-monthly['signup_to_purchase'] = monthly['purchasers'] / monthly['signups'].replace({0: pd.NA})
+# Handle division by zero by replacing 0 with NaN
+monthly['signup_to_purchase'] = monthly['purchasers'] / monthly['signups'].replace(0, float('nan'))
 
 plt.figure(figsize=(10,6))
 plt.plot(monthly['month'], monthly['visit_to_signup'], label='Visit → Signup')
