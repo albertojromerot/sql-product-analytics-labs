@@ -32,10 +32,21 @@ from IPython.display import display
 
 sns.set_theme(style="whitegrid")
 
-# Resolve project root relative to this notebook file
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+def get_project_root() -> Path:
+    if "__file__" in globals():
+        start = Path(__file__).resolve()
+    else:
+        start = Path.cwd().resolve()
+    for path in [start, *start.parents]:
+        if (path / "sql" / "schema.sql").exists():
+            return path
+    return start
+
+
+PROJECT_ROOT = get_project_root()
 SCHEMA_PATH = PROJECT_ROOT / "sql" / "schema.sql"
-SEED_PATH = PROJECT_ROOT / "sql" / "seed.sql"
+SEED_PATH   = PROJECT_ROOT / "sql" / "seed.sql"
 
 con = duckdb.connect(database=":memory:")
 con.execute(SCHEMA_PATH.read_text())
