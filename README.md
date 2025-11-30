@@ -3,7 +3,7 @@
 ![CI](https://github.com/albertojromerot/sql-product-analytics-labs/actions/workflows/reports.yml/badge.svg)
 [![Notebooks](https://github.com/albertojromerot/sql-product-analytics-labs/actions/workflows/reports.yml/badge.svg)](https://github.com/albertojromerot/sql-product-analytics-labs/actions/workflows/reports.yml)
 
-A recruiter-friendly, end-to-end SQL analytics showcase that starts with synthetic e-commerce data, walks through DuckDB notebooks, and ends with ready-to-share HTML reports and Power BI theming.
+A friendly, end-to-end SQL analytics showcase that starts with synthetic e-commerce data, walks through DuckDB notebooks, and ends with ready-to-share HTML reports and Power BI theming.
 
 > Text-only initial scaffold: notebooks live as Jupytext `.py` files; CI converts them to `.ipynb`, executes, and attaches HTML artifacts on PRs.
 > Text-only initial scaffold: CI will generate PNGs and HTML reports after this PR is opened.
