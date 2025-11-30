@@ -62,7 +62,7 @@ def generate_products() -> pd.DataFrame:
     for cat, low, high in categories:
         for i in range(10):
             price = np.random.uniform(low, high)
-            product_name = f"{prefixes[i]} {cat} {suffixes[i]}"
+            product_name = f"{prefixes[i % len(prefixes)]} {cat} {suffixes[i % len(suffixes)]}"
             product_rows.append({
                 "product_id": product_id,
                 "product_name": product_name,

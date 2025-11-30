@@ -64,7 +64,7 @@ print("Tables loaded:", con.execute("SHOW TABLES").fetchall())
 #
 # Steps:
 # 1. Join `orders` and `order_items` on `order_id`.
-# 2. Aggregate revenue by `order_ts` (UTC) to view daily trends.
+# 2. Aggregate revenue by order date (derived from `order_ts`) to view daily trends.
 
 # %%
 daily_revenue = con.execute(
@@ -94,6 +94,7 @@ plt.xlabel("Order date")
 plt.ylabel("Revenue (USD)")
 plt.xticks(rotation=30)
 plt.tight_layout()
+plt.savefig('assets/joins_daily_revenue.png', bbox_inches='tight')
 plt.show()
 
 # %% [markdown]
@@ -128,6 +129,7 @@ ax.set_title("Revenue by category")
 ax.set_xlabel("Revenue (USD)")
 ax.set_ylabel("Category")
 plt.tight_layout()
+plt.savefig('assets/joins_revenue_by_category.png', bbox_inches='tight')
 plt.show()
 
 product_perf = con.execute(
