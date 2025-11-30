@@ -8,9 +8,25 @@ from pathlib import Path
 
 sns.set_theme(style='whitegrid')
 
+
+def get_project_root() -> Path:
+    if "__file__" in globals():
+        start = Path(__file__).resolve()
+    else:
+        start = Path.cwd().resolve()
+    for path in [start, *start.parents]:
+        if (path / "sql" / "schema.sql").exists():
+            return path
+    return start
+
+
+PROJECT_ROOT = get_project_root()
+SCHEMA_PATH = PROJECT_ROOT / "sql" / "schema.sql"
+SEED_PATH   = PROJECT_ROOT / "sql" / "seed.sql"
+
 con = duckdb.connect(database=':memory:')
-con.execute(Path('sql/schema.sql').read_text())
-con.execute(Path('sql/seed.sql').read_text())
+con.execute(SCHEMA_PATH.read_text())
+con.execute(SEED_PATH.read_text())
 
 tables = ['customers','products','orders','order_items','events','marketing_experiments']
 for table in tables:
