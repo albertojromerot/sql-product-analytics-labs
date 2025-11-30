@@ -22,6 +22,7 @@
 # - customers 1—* marketing_experiments (via participants table in other labs)
 
 # %%
+import os
 from pathlib import Path
 
 import duckdb
@@ -48,6 +49,9 @@ PROJECT_ROOT = get_project_root()
 SCHEMA_PATH = PROJECT_ROOT / "sql" / "schema.sql"
 SEED_PATH   = PROJECT_ROOT / "sql" / "seed.sql"
 
+# Change to project root so relative paths in seed.sql work
+os.chdir(PROJECT_ROOT)
+
 con = duckdb.connect(database=":memory:")
 con.execute(SCHEMA_PATH.read_text())
 con.execute(SEED_PATH.read_text())
@@ -60,14 +64,14 @@ print("Tables loaded:", con.execute("SHOW TABLES").fetchall())
 #
 # Steps:
 # 1. Join `orders` and `order_items` on `order_id`.
-# 2. Aggregate revenue by `order_date` (UTC) to view daily trends.
+# 2. Aggregate revenue by order date (derived from `order_ts`) to view daily trends.
 
 # %%
 daily_revenue = con.execute(
     """
     WITH itemized AS (
         SELECT
-            o.order_date,
+            CAST(o.order_ts AS DATE) AS order_date,
             oi.qty * oi.unit_price_usd AS line_revenue
         FROM orders o
         JOIN order_items oi USING (order_id)
@@ -90,6 +94,7 @@ plt.xlabel("Order date")
 plt.ylabel("Revenue (USD)")
 plt.xticks(rotation=30)
 plt.tight_layout()
+plt.savefig('assets/joins_daily_revenue.png', bbox_inches='tight')
 plt.show()
 
 # %% [markdown]
@@ -124,6 +129,7 @@ ax.set_title("Revenue by category")
 ax.set_xlabel("Revenue (USD)")
 ax.set_ylabel("Category")
 plt.tight_layout()
+plt.savefig('assets/joins_revenue_by_category.png', bbox_inches='tight')
 plt.show()
 
 product_perf = con.execute(
@@ -204,7 +210,7 @@ cohort_revenue = con.execute(
     ), revenue_by_month AS (
         SELECT
             cs.signup_month,
-            date_trunc('month', o.order_date) AS order_month,
+            date_trunc('month', o.order_ts) AS order_month,
             SUM(oi.qty * oi.unit_price_usd) AS revenue_usd
         FROM customer_signup cs
         JOIN orders o USING (customer_id)

@@ -23,10 +23,12 @@ After merge to main, CI commits HTML to `reports/samples/` and PNG charts to `as
 > Thumbnails are committed by CI after the first merge to `main`.
 
 <p align="center">
-  <img src="assets/joins.png" alt="Joins overview" width="45%" title="Appears after first CI run on main" />
-  <img src="assets/windows.png" alt="Window functions" width="45%" title="Appears after first CI run on main" />
-  <img src="assets/funnels.png" alt="Funnel analysis" width="45%" title="Appears after first CI run on main" />
-  <img src="assets/abtest.png" alt="A/B test" width="45%" title="Appears after first CI run on main" />
+  <img src="assets/joins_daily_revenue.png" alt="Daily revenue" width="45%" title="Appears after first CI run on main" />
+  <img src="assets/joins_revenue_by_category.png" alt="Revenue by category" width="45%" title="Appears after first CI run on main" />
+  <img src="assets/window_revenue_ma.png" alt="Revenue moving averages" width="45%" title="Appears after first CI run on main" />
+  <img src="assets/window_cohort_retention.png" alt="Cohort retention heatmap" width="45%" title="Appears after first CI run on main" />
+  <img src="assets/cte_funnel_counts.png" alt="Funnel analysis" width="45%" title="Appears after first CI run on main" />
+  <img src="assets/ab_conversion_rates.png" alt="A/B test conversion rates" width="45%" title="Appears after first CI run on main" />
 </p>
 
 ## Data model
